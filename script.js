@@ -15,16 +15,50 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     });
 });
 
+// Бургер-меню
+const burgerMenu = document.getElementById('burgerMenu');
+const navLinks = document.getElementById('navLinks');
+
+if (burgerMenu && navLinks) {
+    burgerMenu.addEventListener('click', () => {
+        burgerMenu.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Закрытие меню при клике на ссылку
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            burgerMenu.classList.remove('active');
+            navLinks.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // Закрытие меню при клике вне его или на оверлей
+    document.addEventListener('click', (e) => {
+        if (navLinks.classList.contains('active') && 
+            !burgerMenu.contains(e.target) && 
+            !navLinks.contains(e.target)) {
+            burgerMenu.classList.remove('active');
+            navLinks.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+}
+
 // Фон навбара при скролле
 const navbar = document.querySelector('.navbar');
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    if (currentScroll > 100) {
-        navbar.style.background = 'rgba(0, 0, 0, 0.95)';
-    } else {
-        navbar.style.background = 'rgba(0, 0, 0, 0.9)';
-    }
-});
+if (navbar) {
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        if (currentScroll > 100) {
+            navbar.style.background = 'rgba(0, 0, 0, 0.95)';
+        } else {
+            navbar.style.background = 'rgba(0, 0, 0, 0.9)';
+        }
+    });
+}
 
 // Анимации появления блоков
 const observerOptions = {
@@ -114,6 +148,8 @@ const casesData = {
 
 // Функция открытия модального окна
 function openModal(caseId) {
+    if (!modal || !modalTitle) return;
+    
     const caseData = casesData[caseId];
     if (!caseData) return;
 
@@ -212,6 +248,7 @@ function openModal(caseId) {
 
 // Функция закрытия модального окна
 function closeModal() {
+    if (!modal) return;
     modal.classList.remove('active');
     modal.classList.remove('modal-site');
     document.body.style.overflow = '';
@@ -227,13 +264,20 @@ document.querySelectorAll('.case-card').forEach(card => {
     });
 });
 
-modalClose.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', closeModal);
+// Обработчики модального окна
+if (modalClose) {
+    modalClose.addEventListener('click', closeModal);
+}
+if (modalOverlay) {
+    modalOverlay.addEventListener('click', closeModal);
+}
 
 // Закрытие по Escape
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('active')) {
-        closeModal();
-    }
-});
+if (modal) {
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+}
 
